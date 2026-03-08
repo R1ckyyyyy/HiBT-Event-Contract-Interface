@@ -1,0 +1,5 @@
+{
+    "email": "your_email@gmail.com",
+    "password": "your_password",
+    "totp_secret": "ABCDEFGHIJKLMNOPQRSTUVWX234567"
+}
