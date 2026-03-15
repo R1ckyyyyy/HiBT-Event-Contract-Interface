@@ -16,13 +16,15 @@ import datetime
 # 为了让其他项目好追踪，记录到项目根目录的 hibt_order.log
 logger = logging.getLogger("HiBTApiLogger")
 logger.setLevel(logging.INFO)
+logger.propagate = False
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 file_handler = RotatingFileHandler("hibt_order.log", maxBytes=10*1024*1024, backupCount=5, encoding="utf-8")
 file_handler.setFormatter(formatter)
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
-# logger.addHandler(console_handler) # 可选，是否输出到运行终端
+if not logger.handlers:
+    logger.addHandler(file_handler)
+    # logger.addHandler(console_handler) # 可选，是否输出到运行终端
 
 # 引入原有逻辑
 import main
