@@ -1,5 +1,6 @@
 {
     "email": "your_email@gmail.com",
     "password": "your_password",
-    "totp_secret": "ABCDEFGHIJKLMNOPQRSTUVWX234567"
+    "totp_secret": "ABCDEFGHIJKLMNOPQRSTUVWX234567",
+    "api_key": "YOUR_SECURE_API_KEY_HERE"
 }

@@ -1,2 +1,6 @@
 requests
 pydoll-python
+fastapi
+uvicorn
+pydantic
+apscheduler

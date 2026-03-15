@@ -25,3 +25,6 @@ Thumbs.db
 
 # pydoll 浏览器数据
 pydoll-hibt/
+
+# 日志
+*.log
