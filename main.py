@@ -19,6 +19,32 @@ from pydoll.protocol.network.events import NetworkEvent
 current_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(current_dir)
 
+# 复用 HTTP 连接的 Session（避免每次下单重新 TCP+TLS 握手）
+_session = requests.Session()
+_session.headers.update({
+    'accept': 'application/json, text/plain, */*',
+    'accept-language': 'en-GB,en;q=0.9,zh-CN;q=0.8,zh;q=0.7,en-US;q=0.6',
+    'client-type': 'web',
+    'content-type': 'application/x-www-form-urlencoded',
+    'dnt': '1',
+    'future_source': '1',
+    'hc-language': 'zh_CN',
+    'hc-platform': 'web',
+    'lang': 'zh_CN',
+    'origin': 'https://hibt.com',
+    'platform': 'PC',
+    'priority': 'u=1, i',
+    'referer': 'https://hibt.com/',
+    'sec-ch-ua': '"Google Chrome";v="143", "Chromium";v="143", "Not A(Brand";v="24"',
+    'sec-ch-ua-mobile': '?0',
+    'sec-ch-ua-platform': '"Windows"',
+    'sec-fetch-dest': 'empty',
+    'sec-fetch-mode': 'cors',
+    'sec-fetch-site': 'cross-site',
+    'sec-gpc': '1',
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36',
+})
+
 with open('config.json', 'r') as f:
     configs = json.load(f)
 
@@ -259,34 +285,7 @@ def get_token(reset=False, headless=True):
 
 def place_order_web(v, authorization, x_auth_token, amount, direction, symbol, time_unit):
     url = 'https://api.hibt0.com/option/option-order/place'
-    params = {
-        "v": v
-    }
-    headers = {
-        'accept': 'application/json, text/plain, */*',
-        'accept-language': 'en-GB,en;q=0.9,zh-CN;q=0.8,zh;q=0.7,en-US;q=0.6',
-        'client-type': 'web',
-        'content-type': 'application/x-www-form-urlencoded',
-        'dnt': '1',
-        'future_source': '1',
-        'hc-language': 'zh_CN',
-        'hc-platform': 'web',
-        'lang': 'zh_CN',
-        'origin': 'https://hibt.com',
-        'platform': 'PC',
-        'priority': 'u=1, i',
-        'referer': 'https://hibt.com/',
-        'sec-ch-ua': '"Google Chrome";v="143", "Chromium";v="143", "Not A(Brand";v="24"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"Windows"',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'cross-site',
-        'sec-gpc': '1',
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36',
-        'authorization': authorization,
-        'x-auth-token': x_auth_token
-    }
+    params = {"v": v}
     data = {
         'amount': str(amount),
         'direction': str(direction),
@@ -294,7 +293,10 @@ def place_order_web(v, authorization, x_auth_token, amount, direction, symbol, t
         'timeUnit': str(time_unit),
         'langCode': 'zh_CN'
     }
-    response = requests.post(url, headers=headers, data=data, params=params)
+    response = _session.post(
+        url, headers={'authorization': authorization, 'x-auth-token': x_auth_token},
+        data=data, params=params
+    )
     return response.json()
 
 if __name__ == '__main__':
