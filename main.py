@@ -178,7 +178,7 @@ def get_token(reset=False, headless=True):
         try:
             request = req.get("params", {}).get("request", {})
             url = request.get("url", "")
-            if not url.startswith("https://api.hibt0.com/option/option-order/history-summary"):
+            if not url.startswith("https://api.hibt0.com/uc/member/my-info"):
                 return
 
             headers = dict(request.get("headers", {}) or {})
